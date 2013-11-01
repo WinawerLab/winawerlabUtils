@@ -15,14 +15,14 @@ if ~exist('waitForUser', 'var'), waitForUser = false; end
 
 
 %% Paths
-% if ismac
-%     % For mysterious reasons, on some Macs Matlab tinkers with the path to the
-%     % DYLD Library, and this interferes with calling git commands from
-%     % Matlab. So we get the current path, store it, change it while running
-%     % this function, and then restore it at the end of the function
-%     dyld = getenv('DYLD_LIBRARY_PATH');
-%     setenv('DYLD_LIBRARY_PATH', '/usr/local/bin')
-% end
+if ismac
+    % For mysterious reasons, on some Macs Matlab tinkers with the path to the
+    % DYLD Library, and this interferes with calling git commands from
+    % Matlab. So we get the current path, store it, change it while running
+    % this function, and then restore it at the end of the function
+    dyld = getenv('DYLD_LIBRARY_PATH');
+    setenv('DYLD_LIBRARY_PATH', '/usr/local/bin')
+end
 
 % note the current directory so that we can return to it
 curdir = pwd;
@@ -100,7 +100,7 @@ end
 cd(curdir)
 
 % if we have a mac, we may need to restore the dyld path that we temporarily changed
-% if ismac
-%     setenv('DYLD_LIBRARY_PATH', dyld)
-%     
-% end
+if ismac
+    setenv('DYLD_LIBRARY_PATH', dyld)
+    
+end

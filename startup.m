@@ -21,6 +21,8 @@ function startup(s)
 fprintf('[%s]: Restoring default paths....\n', mfilename);
 restoredefaultpath;
 
+addpath('~/matlab/git/winawerlabUtils/');
+
 if ~isempty(javachk('desktop')), return; end
 
 %% Paths options
