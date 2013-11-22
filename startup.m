@@ -1,5 +1,5 @@
 function startup(s)
-% startup file for Jon Winawer's matlab environment.
+% startup file for Winawer Lab's matlab environment.
 % This file should be located in the matlab home directory, usually
 %   ~/matlab/startup.m
 % 
@@ -17,29 +17,31 @@ function startup(s)
 % clear mnehome mnematlab;
 
 
-%% Restore defaults
+%% Restore default paths
 fprintf('[%s]: Restoring default paths....\n', mfilename);
 restoredefaultpath;
 
+% Add the winawerLab utilities to the path. This folder should contain just
+% a few core functions
 addpath('~/matlab/git/winawerlabUtils/');
 
+% If Matlab is opened without a desktop, then skip the interactive path
+% selection. Otherwise, when Matlab is opened in the background, for
+% example by a parallel process, it will hang.
 if ~isempty(javachk('desktop')), return; end
 
 %% Paths options
 myhome = '~/matlab/';
 mypaths = {...
     'vistasoft' ...
-    'vistaproj' ...
     'vistadisp' ...
     'vistadata' ...
     'isetbio' ...
     'knk' ...
-    'ECoG' ...
-    'teaching' ... ...
+    'teaching' ... 
     };
 
 NONE        = length(mypaths) + 1;
-FAVORITES   = 0;
 
 %% Get the selected options
 str = 'Enter one or more:';
@@ -50,7 +52,6 @@ for p = 1:length(mypaths)
 end
 
 str = sprintf('%s\n(%d) none', str, p+1);
-str = sprintf('%s\n(%d) favorites (1,2,6)\n\n', str, 0);
 drawnow();
 
 if ~exist('s', 'var'), s = input(str,'s'); end
@@ -63,8 +64,6 @@ for p = 1:length(s)
     switch num
         case NONE,
             thispath = 'none';
-        case FAVORITES,
-            thispath = 'favorites';
         otherwise
             thispath = mypaths{num};
     end
@@ -81,6 +80,7 @@ if any(strcmpi('none', selectedPaths))
 end
 
 thepaths = {};
+
 % vistasoft
 if any(strcmpi('vistasoft', selectedPaths)) ||...
         any(strcmpi('favorites', selectedPaths)) 
@@ -88,7 +88,7 @@ if any(strcmpi('vistasoft', selectedPaths)) ||...
         'git/vistasoft/'...
         'git/vistatest'...
         }];
-    addpath(fullfile(myhome, 'git', 'spm8'));
+    addpath(fullfile(myhome, 'spm8'));
 end
 
 % vistadisp
@@ -96,20 +96,10 @@ if any(strcmpi('vistadisp', selectedPaths))
 
     thepaths = [thepaths {...
         'git/vistadisp/'...
-        'svn/Psychtoolbox/'...
-        'svn/vistastim/'...
-        'svn/vistaproj/runme/'...        
+        '/Applications/Psychtoolbox/'...
         }];
 end
 
-% vistaproj
-if any(strcmpi('vistaproj', selectedPaths)) ||...
-        any(strcmpi('favorites', selectedPaths)) 
-
-    thepaths = [thepaths {...
-        'svn/vistaproj/'...
-        }];
-end
 
 % vistadata
 if any(strcmpi('vistadata', selectedPaths)) 
@@ -121,7 +111,7 @@ end
 
 
 
-% iset
+% isetbio
 if any(strcmpi('isetbio', selectedPaths)) 
     thepaths = [thepaths...
         {...
@@ -147,14 +137,7 @@ if any(strcmpi('teaching', selectedPaths))
     cd ~/matlab/git/mrTutorials-matlab/;
 end
 
-if any(strcmpi('ECoG', selectedPaths)) 
-    thepaths = [thepaths ...
-        {...
-        'git/ECoG_pRF/'...
-        'svn/kendrick/'...
-        }];
-    cd ~/matlab/git/ECoG_pRF/;
-end
+
 
 
 %% Load them
