@@ -51,7 +51,7 @@ for p = 1:length(mypaths)
     str = sprintf('%s\n(%d) %s', str, p, mypaths{p});
 end
 
-str = sprintf('%s\n(%d) none', str, p+1);
+str = sprintf('%s\n(%d) none\n', str, p+1);
 drawnow();
 
 if ~exist('s', 'var'), s = input(str,'s'); end
