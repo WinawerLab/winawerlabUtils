@@ -143,7 +143,11 @@ end
 %% Load them
 fprintf('[%s]:Loading Jon''s paths....\n', mfilename);
 for ii = 1:length(thepaths)
-    thispath = [myhome thepaths{ii}];
+    if ~strcmp(thepaths{ii}(1), filesep)
+        thispath = [myhome thepaths{ii}];
+    else
+        thispath = thepaths{ii};
+    end
     addpath(genpath(thispath))
     fprintf('\t%s\n' , thispath);
 end
