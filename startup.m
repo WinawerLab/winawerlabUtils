@@ -97,6 +97,7 @@ if any(strcmpi('vistadisp', selectedPaths))
     thepaths = [thepaths {...
         'git/vistadisp/'...
         '/Applications/Psychtoolbox/'...
+        '~/projects/runme/' ...
         }];
 end
 
@@ -143,10 +144,15 @@ end
 %% Load them
 fprintf('[%s]:Loading Jon''s paths....\n', mfilename);
 for ii = 1:length(thepaths)
-    if ~strcmp(thepaths{ii}(1), filesep)
-        thispath = [myhome thepaths{ii}];
+    
+    if strcmp(thepaths{ii}(1), filesep)
+        % a filesep indicates an absolute path, so don't add myhome prefix
+        thispath = thepaths{ii};        
+    elseif strcmp(thepaths{ii}(1), '~')
+        % a tilda indicates an absolute path, so don't add myhome prefix
+        thispath = thepaths{ii};      
     else
-        thispath = thepaths{ii};
+        thispath = [myhome thepaths{ii}];
     end
     addpath(genpath(thispath))
     fprintf('\t%s\n' , thispath);
