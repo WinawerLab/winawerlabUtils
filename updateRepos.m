@@ -1,7 +1,8 @@
 function updateRepos(homedir, doSVN, doGIT, waitForUser)
-% Updata all github and svn repositories found in
+% Updates Psychtoolbox and all github and svn repositories found in
 %   homedir/git
 %   homedir/svn
+%
 % updateRepos(homedir [fullfile('~', 'matlab')], doSVN [true], ...
 %   doGIT [true], waitForUser [false])
 %
