@@ -150,6 +150,10 @@ for p=1:length(fieldmapB0files)
       
       % subtract the mean phase of the slice from each voxel
       fieldmaps{p}          = bsxfun(@plus, fieldmaps{p}, fieldmapAngleMean);
+      
+      % do we need to reverse the sign of the fieldmaps? (if so, we
+      % probably have the readout direction reversed)
+      fieldmaps{p}          = -fieldmaps{p};
   end
 
 end
