@@ -30,7 +30,7 @@ fm_pths = matchfiles(fullfile(data_path, '*field_mapping*', '*.nii'));
 ip_pths = matchfiles(fullfile(data_path, '*T1inplane*', '*.nii'));
 
 % CBI EPI paths
-epi_pths = matchfiles(fullfile(data_path, '*epi*', '*.nii'));
+epi_pths = matchfiles(fullfile(data_path, '*Single_Shot_epi*', '*.nii'));
 
 ni_pths = [ip_pths epi_pths fm_pths];
 
@@ -43,18 +43,18 @@ for i = 1:length(ni_pths)
     ni_std = niftiApplyAndCreateXform(ni,xformType);
 
     % look at the original and the standard nifti
-    f = figure(101); pos = get(f, 'Position');
-    set(f, 'Position', [pos(1) pos(2) pos(3) pos(3)*2])
-    
-    colormap gray; 
-    
-    subplot(2,1,1)
-    imagesc(makeimagestack(mean(ni.data,4))); title('NIFTI original')
-    axis equal tight
-    
-    subplot(2,1,2)
-    imagesc(makeimagestack(mean(ni_std.data,4))); title('NIFTI standard')
-    axis equal tight
+%     f = figure(101); pos = get(f, 'Position');
+%     set(f, 'Position', [pos(1) pos(2) pos(3) pos(3)*2])
+%     
+%     colormap gray; 
+%     
+%     subplot(2,1,1)
+%     imagesc(makeimagestack(mean(ni.data,4))); title('NIFTI original')
+%     axis equal tight
+%     
+%     subplot(2,1,2)
+%     imagesc(makeimagestack(mean(ni_std.data,4))); title('NIFTI standard')
+%     axis equal tight
     
     % write out the standard nifti    
     ni_std.fname = strrep(ni_pth, '.nii', '_std.nii.gz');
