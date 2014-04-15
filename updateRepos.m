@@ -57,7 +57,7 @@ if doSVN
         if d(ii).isdir && ~ismember(d(ii).name, {'.', '..'})
             disp('***********************************************');
             disp('***********************************************');
-            fprintf('udating %s...\n', d(ii).name); drawnow
+            fprintf('updating %s...\n', d(ii).name); drawnow
             
             cd(fullfile(pth, d(ii).name))
             
@@ -84,7 +84,7 @@ if doGIT
         if d(ii).isdir && ~ismember(d(ii).name, {'.', '..'})
             disp('***********************************************');
             disp('***********************************************');
-            fprintf('udating %s...\n', d(ii).name); drawnow
+            fprintf('updating %s...\n', d(ii).name); drawnow
             
             cd(fullfile(pth, d(ii).name))
             

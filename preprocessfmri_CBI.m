@@ -15,7 +15,7 @@
 %   matlabpool open;
 % end
 
-if isempty(fieldmapB0files)
+if ~exist('fieldmapB0files', 'var') || isempty(fieldmapB0files)
   fprintf('no fieldmapB0files were specified (VERIFY THAT THIS IS CORRECT).\n\n');
 else
   fprintf('the following are the fieldmapB0files that we found (VERIFY THAT THIS IS CORRECT):\n');
@@ -23,7 +23,7 @@ else
   fprintf('\n');
 end
 
-if isempty(fieldmapMAGfiles)
+if ~exist('fieldmapMAGfiles', 'var') ||  isempty(fieldmapMAGfiles)
   fprintf('no fieldmapMAGfiles were specified (VERIFY THAT THIS IS CORRECT).\n\n');
 else
   fprintf('the following are the fieldmapMAGfiles that we found (VERIFY THAT THIS IS CORRECT):\n');
@@ -31,7 +31,7 @@ else
   fprintf('\n');
 end
 
-if isempty(inplanefilenames)
+if  ~exist('inplanefilenames', 'var') || isempty(inplanefilenames)
   fprintf('no inplanefilenames were specified (VERIFY THAT THIS IS CORRECT).\n\n');
 else
   fprintf('the following are the inplanefilenames that we found (VERIFY THAT THIS IS CORRECT):\n');
@@ -116,46 +116,49 @@ reportmemoryandtime;
 % load fieldmap data
 fprintf('loading fieldmap data...');
 fieldmaps = {}; fieldmapsizes = {}; fieldmapbrains = {};
-for p=1:length(fieldmapB0files)
-  ni = load_untouch_nii(gunziptemp(fieldmapB0files{p}));
-  
-  if exist('fieldmapConvert', 'var')
-      fieldmaps{p} = fieldmapConvert(double(ni.img));
-  else
-      fieldmaps{p} = double(ni.img) * pi / (1/(fieldmapdeltate/1000)/2) ;  % convert to range [-pi,pi]
-  end
-  
-  
-  fieldmapsizes{p} = ni.hdr.dime.pixdim(2:4);
-  ni = load_untouch_nii(gunziptemp(fieldmapMAGfiles{p}));
-  fieldmapbrains{p} = double(ni.img(:,:,:,1));  % JUST USE FIRST VOLUME
-  clear ni;
-  
-  % navigator correction: subtract the mean phase of each slice
-  if exist('navigatorCorrection', 'var') && navigatorCorrection     
-      sz = size(fieldmaps{p});
-      
-      % get the complex field map
-      fieldmapComplex       = fieldmapbrains{p}.*exp(-1i* fieldmaps{p});
-      
-      % get the mean of each slice of the complex map
-      fieldmapComplexMean   = mean(reshape(fieldmapComplex, [sz(1)*sz(2) sz(3)]));
-      
-      % get the phase of the slice
-      fieldmapAngleMean     = angle(fieldmapComplexMean);
-      
-      % add a singleton dimension so that fieldmaAngleMean has the same
-      % number of dimensions as fieldmaps
-      fieldmapAngleMean     = reshape(fieldmapAngleMean, [1 size(fieldmapAngleMean)]);
-      
-      % subtract the mean phase of the slice from each voxel
-      fieldmaps{p}          = bsxfun(@plus, fieldmaps{p}, fieldmapAngleMean);
-      
-      % do we need to reverse the sign of the fieldmaps? (if so, we
-      % probably have the readout direction reversed)
-      fieldmaps{p}          = -fieldmaps{p};
-  end
 
+if exist('fieldmapB0files', 'var')
+    for p=1:length(fieldmapB0files)
+        ni = load_untouch_nii(gunziptemp(fieldmapB0files{p}));
+        
+        if exist('fieldmapConvert', 'var')
+            fieldmaps{p} = fieldmapConvert(double(ni.img));
+        else
+            fieldmaps{p} = double(ni.img) * pi / (1/(fieldmapdeltate/1000)/2) ;  % convert to range [-pi,pi]
+        end
+        
+        
+        fieldmapsizes{p} = ni.hdr.dime.pixdim(2:4);
+        ni = load_untouch_nii(gunziptemp(fieldmapMAGfiles{p}));
+        fieldmapbrains{p} = double(ni.img(:,:,:,1));  % JUST USE FIRST VOLUME
+        clear ni;
+        
+        % navigator correction: subtract the mean phase of each slice
+        if exist('navigatorCorrection', 'var') && navigatorCorrection
+            sz = size(fieldmaps{p});
+            
+            % get the complex field map
+            fieldmapComplex       = fieldmapbrains{p}.*exp(-1i* fieldmaps{p});
+            
+            % get the mean of each slice of the complex map
+            fieldmapComplexMean   = mean(reshape(fieldmapComplex, [sz(1)*sz(2) sz(3)]));
+            
+            % get the phase of the slice
+            fieldmapAngleMean     = angle(fieldmapComplexMean);
+            
+            % add a singleton dimension so that fieldmaAngleMean has the same
+            % number of dimensions as fieldmaps
+            fieldmapAngleMean     = reshape(fieldmapAngleMean, [1 size(fieldmapAngleMean)]);
+            
+            % subtract the mean phase of the slice from each voxel
+            fieldmaps{p}          = bsxfun(@plus, fieldmaps{p}, fieldmapAngleMean);
+            
+            % do we need to reverse the sign of the fieldmaps? (if so, we
+            % probably have the readout direction reversed)
+            fieldmaps{p}          = -fieldmaps{p};
+        end
+        
+    end
 end
 fprintf('done (loading fieldmap data).\n');
 
@@ -195,6 +198,23 @@ reportmemoryandtime;
     epiignoremcvol = [];
   end
 fprintf('calling preprocessfmri...');
+
+% checks
+if ~exist('fieldmaps', 'var'),              fieldmaps = []; end
+if ~exist('fieldmaptimes', 'var'),          fieldmaptimes = []; end
+if ~exist('fieldmapbrains', 'var'),         fieldmapbrains = []; end
+if ~exist('fieldmapsizes', 'var'),          fieldmapsizes = []; end
+if ~exist('fieldmapdeltate', 'var'),        fieldmapdeltate = []; end
+if ~exist('fieldmapunwrap', 'var'),         fieldmapunwrap = []; end
+if ~exist('fieldmapsmoothing', 'var'),      fieldmapsmoothing = []; end
+if ~exist('fieldmapB0files', 'var'),        fieldmapB0files = []; end
+if ~exist('fieldmaptimeinterp', 'var'),     fieldmaptimeinterp = []; end
+if ~exist('epiinplanematrixsize', 'var'),   epiinplanematrixsize = []; end
+if ~exist('epireadouttime', 'var'),         epireadouttime = []; end
+if ~exist('epifieldmapasst', 'var'),        epifieldmapasst = []; end
+
+
+
 [epis,finalepisize,validvol,meanvol] = preprocessfmri(figuredir,inplanes,inplanesizes, ...
   {fieldmaps fieldmaptimes},fieldmapbrains,fieldmapsizes,fieldmapdeltate,fieldmapunwrap,fieldmapsmoothing, ...
   epis,episizes{1},epiinplanematrixsize,cell2mat(epitr),episliceorder, ...
