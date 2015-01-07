@@ -26,12 +26,28 @@ addpath('~/matlab/git/winawerlabUtils/');
 % example by a parallel process, it will hang.
 if ~isempty(javachk('desktop')), return; end
 
+
+%% Set plotting preferences
+
+%% Plotting preferences
+disp('Setting default plotting preferences')
+text_size = 16;
+set(0,'DefaultFigureColor','w')
+set(0, 'defaultAxesFontSize', text_size)
+set(0, 'defaultTextFontSize', text_size)
+
+set(0,'defaultaxeslinewidth',1);
+set(0,'defaultlinelinewidth',2);
+
+set(0,'DefaultLineMarkerSize',12)
+
 %% Paths options
 myhome = '~/matlab/';
 mypaths = {...
     'vistasoft' ...
     'vistadisp' ...
     'vistadata' ...
+    'meg' ...
     'isetbio' ...
     'knk' ...
     'teaching' ... 
@@ -107,6 +123,14 @@ end
 
 
 
+% meg
+if any(strcmpi('meg', selectedPaths)) 
+    thepaths = [thepaths...
+        {...
+        'git/meg_utils/',...
+        }];
+end
+
 % isetbio
 if any(strcmpi('isetbio', selectedPaths)) 
     thepaths = [thepaths...
@@ -159,6 +183,9 @@ cd ~/projects;
 clear all
 
 disp(['Current directory: ' pwd])
+
+
+
 
 %% Neuroimaging tools
 
