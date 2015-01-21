@@ -1,4 +1,4 @@
-function updateRepos(homedir, doSVN, doGIT, waitForUser)
+function updateRepos(homedir, doSVN, doGIT)
 % Updates Psychtoolbox and all github and svn repositories found in
 %   homedir/git
 %   homedir/svn
@@ -12,8 +12,9 @@ function updateRepos(homedir, doSVN, doGIT, waitForUser)
 if ~exist('homedir', 'var'), homedir = fullfile('~', 'matlab'); end
 if ~exist('doSVN', 'var'), doSVN = true; end
 if ~exist('doGIT', 'var'), doGIT = true; end
-if ~exist('waitForUser', 'var'), waitForUser = false; end
 
+fname = fullfile(tempdir, sprintf('updateReposLog %s', datestr(now, 'yyyy_mm_dd_HH_MM_SS')));
+diary(fname);
 
 %% Paths
 if ismac
@@ -28,21 +29,6 @@ end
 % note the current directory so that we can return to it
 curdir = pwd;
 
-
-%% PsychToolBox
-
-% Store current paths
-p = path;
-
-% Add PTB paths
-addpath(genpath('/Applications/Psychtoolbox/'));
-
-% update
-run('/Applications/Psychtoolbox/UpdatePsychtoolbox.m')
-
-% restore paths
-path(p);
-
 %% Subversion
 
 if doSVN
@@ -55,16 +41,15 @@ if doSVN
     % loop over directories and update each one
     for ii = 1:length(d)
         if d(ii).isdir && ~ismember(d(ii).name, {'.', '..'})
+            fprintf('\n\n\n***********************************************\n');
+            fprintf('********* Updating %s... ****\n', upper(d(ii).name)); drawnow
             disp('***********************************************');
-            disp('***********************************************');
-            fprintf('updating %s...\n', d(ii).name); drawnow
-            
+
             cd(fullfile(pth, d(ii).name))
             
             % update and display status
             system('svn update');
             system('svn status');
-            if waitForUser, pause; end
         end
     end
     
@@ -82,16 +67,15 @@ if doGIT
     % loop over directories and update each one
     for ii = 1:length(d)
         if d(ii).isdir && ~ismember(d(ii).name, {'.', '..'})
+            fprintf('\n\n\n***********************************************\n');
+            fprintf('********* Updating %s... ****\n', upper(d(ii).name)); drawnow
             disp('***********************************************');
-            disp('***********************************************');
-            fprintf('updating %s...\n', d(ii).name); drawnow
             
             cd(fullfile(pth, d(ii).name))
             
             % update and display status
             system('git pull');
             system('git status');
-            if waitForUser, pause; end
         end
     end
     
@@ -102,6 +86,8 @@ cd(curdir)
 
 % if we have a mac, we may need to restore the dyld path that we temporarily changed
 if ismac
-    setenv('DYLD_LIBRARY_PATH', dyld)
-    
+    setenv('DYLD_LIBRARY_PATH', dyld)    
 end
+
+diary off
+edit(fname)
